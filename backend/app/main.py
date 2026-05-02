@@ -52,19 +52,13 @@ def create_app() -> FastAPI:
         docs_url="/docs"   if not settings.is_production else None,
         redoc_url="/redoc" if not settings.is_production else None,
     )
-
-    app.add_middleware(CORSMiddleware,
-        # FIX #4: Use explicit origin list in production; specific localhost in dev.
-        # allow_origins=["*"] with allow_credentials=True is invalid per CORS spec.
-        allow_origins=settings.allowed_origins if settings.is_production else [
-            "http://localhost:3000",
-            "http://localhost:3001",
-        ],
-        allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-        allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
-    )
-
+    app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # TEMP FIX
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
     register_exception_handlers(app)
     Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
